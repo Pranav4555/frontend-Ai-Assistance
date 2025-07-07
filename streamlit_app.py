@@ -1,7 +1,11 @@
 # streamlit_app.py
 
 import streamlit as st
-from backend.agent import run_agent
+import requests
+import os
+
+# Load backend URL from environment variables
+BACKEND_URL = os.getenv("BACKEND_URL")
 
 st.set_page_config(page_title="AI Calendar Agent", page_icon="📅")
 st.title("📅 AI Calendar Booking Assistant")
@@ -13,12 +17,24 @@ if "chat_history" not in st.session_state:
 # Chat input
 user_input = st.chat_input("Ask to check or book a time slot...")
 
-# Run agent on user input
+# Run agent via backend API
+def get_agent_response(query):
+    try:
+        response = requests.post(
+            f"{BACKEND_URL}/chat",
+            json={"query": query},
+            timeout=10
+        )
+        return response.json().get("response", "❌ Error: Invalid response from backend.")
+    except Exception as e:
+        return f"❌ Error: {e}"
+
+# Handle chat interaction
 if user_input:
     st.session_state.chat_history.append(("user", user_input))
     with st.spinner("Thinking..."):
-        response = run_agent(user_input)
-    st.session_state.chat_history.append(("ai", response))
+        ai_response = get_agent_response(user_input)
+    st.session_state.chat_history.append(("ai", ai_response))
 
 # Render chat history
 for role, message in st.session_state.chat_history:
