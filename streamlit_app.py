@@ -7,8 +7,8 @@ import os
 # Load backend URL from environment variables
 BACKEND_URL = os.getenv("BACKEND_URL")
 
-st.set_page_config(page_title="AI Calendar Agent", page_icon="📅")
-st.title("📅 AI Calendar Booking Assistant")
+st.set_page_config(page_title="AI Calendar Agent")
+st.title("AI Calendar Booking Assistant")
 
 # Persistent memory per user session
 if "chat_history" not in st.session_state:
